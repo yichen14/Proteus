@@ -19,7 +19,8 @@ The adapter never writes into the Aki checkout; all state lands in the Proteus r
 Known limits, stated rather than papered over:
 - Aki's phase prompts live inside the harness (`loop.py`), so `spec.phase_prompts` is not
   injected into the episode yet; no-goal runs — the paper's primary regime — are fully
-  supported, goal-text injection into Aki episodes is not wired.
+  supported, while the framework default epistemic protocol and goal-text injection are
+  not wired into Aki episodes. Other bundled adapters consume `spec.phase_prompts`.
 - Aki couples seeding and disposition install in one `init_run`, so this adapter performs
   both inside `install_disposition` (the framework calls `seed` first; it only records state).
 """

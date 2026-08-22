@@ -69,8 +69,9 @@ class EpisodeSpec:
     root: Path                       # the run root; harness working tree lives at root/harness
     episode: int                     # 1-based
     model: str                       # model id the harness should use
-    phase_prompts: Mapping[str, str] # observe/propose/act/reflect texts (goal + evaluator
-                                     # feedback already merged in by the framework)
+    phase_prompts: Mapping[str, str] # observe/propose/act/reflect texts (default episode
+                                     # protocol, goal, and visible evaluator feedback
+                                     # already merged in by the framework)
     max_turns: int = 100
     min_turns_per_phase: int = 0
     """Reserve at least this many turns for each phase. While phase i runs, its stop

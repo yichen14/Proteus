@@ -239,6 +239,14 @@ A general goal such as “become more robust” needs no benchmark. A specific o
 claim does: if the goal says “optimize benchmark X”, attach X and make it `@observe`, or the
 agent has no measured feedback for the stated objective.
 
+The default episode protocol does not assume that an attached evaluator is either complete
+or incomplete. A benchmark can fully define a goal whose whole meaning is “raise this
+benchmark score”; the same benchmark can be only partial evidence for a broader goal. The
+harness is asked to judge that relationship and may add its own tests or evaluators when
+they reduce uncertainty, but not merely because an external evaluator exists. With neither
+a goal nor evaluator, the default remains open-ended: the harness may keep exploring or
+formulate its own provisional goal and evaluation machinery as part of its evolved state.
+
 ## Your harness
 
 ```bash

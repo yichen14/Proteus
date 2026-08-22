@@ -4,7 +4,8 @@ from pathlib import Path
 
 from proteus.adapters.minimal import MinimalHarness
 from proteus.core import NEUTRAL, GoalConfig, review, snapshot
-from proteus.core.episode import BASE_PROMPTS, PHASES, RunConfig, run
+from proteus.core.episode import OPEN_BASE_PROMPTS, PHASES, RunConfig, run
+from proteus.core.episode_protocol import EPISTEMIC_PROTOCOL
 from proteus.measure import distance, stream
 
 
@@ -112,7 +113,8 @@ def test_file_carrying_adapters_do_not_also_get_the_prompt_copy():
     disp = review("notes")
     p = _prompts(FileCarrier(), disp)
     assert all("go over your notes" not in p[ph] for ph in PHASES)
-    assert p["observe"] == BASE_PROMPTS["observe"]        # otherwise untouched
+    assert OPEN_BASE_PROMPTS["observe"] in p["observe"]
+    assert p["observe"].count(EPISTEMIC_PROTOCOL.strip()) == 1
 
 
 def test_shipped_file_carrying_adapters_declare_it():

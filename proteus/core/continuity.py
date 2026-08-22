@@ -50,10 +50,15 @@ def validate_mode(mode: str) -> str:
     return mode
 
 
-def framework_prompt(phase: str) -> str:
+def framework_prompt(phase: str, *, goal_present: bool = True) -> str:
     """The portable protocol text appended to a framework-continuity phase prompt."""
+    observe_action = (
+        "Record objective-relevant findings and evidence for propose."
+        if goal_present else
+        "Record findings, evidence, and uncertainties for propose."
+    )
     action = {
-        "observe": "Record objective-relevant findings and evidence for propose.",
+        "observe": observe_action,
         "propose": "Replace it with one scoped file-and-test plan for act.",
         "act": "Replace it with edits attempted, files changed, and verification still needed.",
         "reflect": "Replace it with validation results, unresolved risks, and the next step.",

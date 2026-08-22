@@ -115,9 +115,10 @@ class TemplateHarness:
         """Run exactly one context-fresh episode against the harness at `spec.root`.
 
         TODO: replace the deterministic stub below with a call into your agent loop. The
-        real work is: give the loop `spec.phase_prompts` (goal + evaluator feedback are
-        already merged in), let it edit the surfaces, and write a per-turn trace that
-        `read_trace` can reload. Results flow through the trace, never through stdout.
+        real work is: give the loop `spec.phase_prompts` (the default episode protocol,
+        goal, and visible evaluator feedback are already merged in), let it edit the
+        surfaces, and write a per-turn trace that `read_trace` can reload. Results flow
+        through the trace, never through stdout.
 
         The writable harness is at `spec.root / "harness"`. If you declared
         `staged_activation = True`, execute from `spec.active_root` instead and keep the

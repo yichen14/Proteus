@@ -19,6 +19,7 @@ from proteus.core.budget import BUDGET_PROTOCOL_VERSION, PHASES, make_budget_pla
 from proteus.core.continuity import PROTOCOL_VERSION
 from proteus.core.disposition import Disposition
 from proteus.core.episode import RunConfig, completed_episodes, run
+from proteus.core.episode_protocol import DEFAULT_EPISODE_PROTOCOL_VERSION
 from proteus.core.goal import GoalConfig
 
 
@@ -138,6 +139,7 @@ def _condition(cfg: "SweepConfig", adapter: HarnessAdapter) -> dict:
         }
     condition = {
         "proteus_version": __version__,
+        "default_episode_protocol_version": DEFAULT_EPISODE_PROTOCOL_VERSION,
         "continuity_protocol_version": (
             PROTOCOL_VERSION
             if getattr(adapter, "continuity_mode", "native") == "framework" else None

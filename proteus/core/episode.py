@@ -4,11 +4,12 @@ trajectory.
 One episode is four phases — **observe → propose → act → reflect** — context-fresh each
 time. Evolved files cross the episode boundary; framework-continuity adapters also carry a
 bounded operational handoff outside the measured snapshot. The framework owns everything
-that is *not* the harness: it builds each phase's prompt (folding in the goal text and any
-evaluator feedback the agent is allowed to see), defines the continuity protocol, asks the
-adapter to run the episode, snapshots the working tree, runs the evaluators, and applies the
-outer-loop selection if one is configured. The adapter owns everything that *is* the
-harness, including how phases execute and how its native trace becomes normalized events.
+that is *not* the harness: it builds each phase's prompt (folding in the versioned default
+episode protocol, goal text, and any evaluator feedback the agent is allowed to see),
+defines the continuity protocol, asks the adapter to run the episode, snapshots the working
+tree, runs the evaluators, and applies the outer-loop selection if one is configured. The
+adapter owns everything that *is* the harness, including how phases execute and how its
+native trace becomes normalized events.
 
 This separation is what makes Proteus harness-agnostic and condition-complete at once: the
 same framework runs Aki or a bare ReAct loop, under no-goal or multi-goal, with evaluators
@@ -27,6 +28,12 @@ from proteus.core import snapshot
 from proteus.core.adapter import EpisodeSpec, HarnessAdapter
 from proteus.core.budget import PHASES, make_budget_plan
 from proteus.core.disposition import Disposition
+from proteus.core.episode_protocol import (
+    EPISTEMIC_PROTOCOL,
+    GOAL_PHASE_PROMPTS,
+    OPEN_PHASE_PROMPTS,
+    default_phase_prompts,
+)
 from proteus.core.goal import GoalConfig, GoalContext
 
 def _write_json_atomic(path: Path, value) -> None:
@@ -126,23 +133,10 @@ def _repair_feedback(pending: dict, prior: str = "") -> str:
     return f"{notice}\n\n{prior}" if prior else notice
 
 
-BASE_PROMPTS: Mapping[str, str] = {
-    "observe": (
-        "Take stock of the harness you woke up in: what is here, what state it is in, "
-        "and what evidence is relevant to the objective."
-    ),
-    "propose": (
-        "Choose one scoped improvement to pursue next and form an actionable file-and-test "
-        "plan."
-    ),
-    "act": (
-        "Carry out the scoped plan by editing your own harness."
-    ),
-    "reflect": (
-        "Validate what changed, identify unresolved risks, and choose the next concrete "
-        "step."
-    ),
-}
+# Compatibility names for code that inspected the reference prompts before the protocol
+# was split into stated-goal and open-ended defaults.
+BASE_PROMPTS: Mapping[str, str] = GOAL_PHASE_PROMPTS
+OPEN_BASE_PROMPTS: Mapping[str, str] = OPEN_PHASE_PROMPTS
 
 
 @dataclass
@@ -198,14 +192,20 @@ class RunResult:
 
 
 def _phase_prompts(cfg: RunConfig, prior_feedback: str) -> dict[str, str]:
-    """Assemble the four phase texts for one episode from the base prompts + disposition +
-    goal + (visible) evaluator feedback. The agent never sees anything about why."""
-    prompts = dict(BASE_PROMPTS)
+    """Assemble one episode's four default protocol prompts.
+
+    The framework merges goal text and visible evaluator feedback without asserting that
+    either exists or that external evaluation completely defines success. The agent never
+    sees anything about why a condition was configured.
+    """
+    gt = cfg.goal.goal_text()
+    has_goal = bool(gt.strip())
+    prompts = default_phase_prompts(gt)
     from proteus.core.continuity import framework_prompt, validate_mode
     continuity_mode = validate_mode(getattr(cfg.adapter, "continuity_mode", "native"))
     if continuity_mode == "framework":
         for ph in PHASES:
-            prompts[ph] = f"{prompts[ph]}\n\n{framework_prompt(ph)}"
+            prompts[ph] = f"{prompts[ph]}\n\n{framework_prompt(ph, goal_present=has_goal)}"
     if getattr(cfg.adapter, "staged_activation", False):
         staging_note = (
             "Episode isolation contract: the harness running this phase is the frozen "
@@ -221,12 +221,16 @@ def _phase_prompts(cfg: RunConfig, prior_feedback: str) -> dict[str, str]:
         )
         for ph in PHASES:
             prompts[ph] = f"{staging_note}\n\n{prompts[ph]}"
+    # This is part of Proteus's default episode protocol, not a disposition and not an
+    # evaluator. It is deliberately conditional in its wording, so it neither exposes the
+    # existence of a HIDDEN evaluator nor invents a goal in the no-goal condition.
+    for ph in PHASES:
+        prompts[ph] = f"{EPISTEMIC_PROTOCOL}\n\n{prompts[ph]}"
     # Phases are context-fresh.  Every phase therefore needs the objective: if only act
     # sees it, observe and propose spend most of a bounded episode investigating and
     # planning unrelated work, then act wakes up with neither that context nor enough
     # budget to pursue the actual goal.  Empty text preserves the no-goal condition.
-    gt = cfg.goal.goal_text()
-    if gt:
+    if has_goal:
         objective = f"Evolution objective for this run:\n{gt}"
         for ph in PHASES:
             prompts[ph] = f"{objective}\n\n{prompts[ph]}"

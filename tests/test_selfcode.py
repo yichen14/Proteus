@@ -253,6 +253,7 @@ def test_staged_prompt_forbids_same_episode_candidate_activation(tmp_path):
         assert "/workspace/candidate" in prompts[phase]
         assert "including reflect" in prompts[phase]
         assert "next episode" in prompts[phase]
+        assert "Proteus epistemic protocol" in prompts[phase]
 
 
 def test_reseeding_never_overwrites_evolved_code(tmp_path):

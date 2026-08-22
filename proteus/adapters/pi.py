@@ -44,8 +44,8 @@ SOURCE_TAR = "/opt/pi-source.tar"
 SEED_INSTRUCTIONS = """\
 # Agent instructions
 
-You maintain and improve your own harness. During a Proteus episode, the harness currently
-running is a frozen, read-only snapshot at `/workspace`; the writable candidate that
+You inhabit, inspect, and may change your own harness. During a Proteus episode, the harness
+currently running is a frozen, read-only snapshot at `/workspace`; the writable candidate that
 persists across phases is `/workspace/candidate`. Make every edit in that candidate. Your
 candidate surfaces are:
 

@@ -71,6 +71,15 @@ fail to build or boot.
 `_phase_prompts` starts from the four base texts (observe / propose / act / reflect) and
 applies fixed rules:
 
+- the versioned **default epistemic protocol** joins all four phases. External evaluator
+  feedback is evidence, not automatically a complete definition of success: a narrow
+  benchmark can fully operationalize its matching goal, while a broad natural-language
+  goal may require the harness to develop additional tests or evaluators. The harness
+  judges that sufficiency and is explicitly told not to create evaluators ritualistically;
+- runs with no stated goal use an **open-ended base prompt**: observe maps evidence and
+  uncertainty, propose chooses a self-directed experiment/question/change, and reflect
+  records effects and surprises without calling them improvements. The harness may later
+  formulate its own provisional goals and evaluators as evolved state;
 - the **goal text** (freeform, decoupled from evaluators) joins **all four phases** because
   a fresh observe or propose otherwise investigates and plans against the wrong objective;
 - **last episode's OBSERVE-visible evaluator feedback** joins the **observe** phase
@@ -85,6 +94,11 @@ applies fixed rules:
   inspect but must not reload candidate code.
 
 The agent sees these texts and nothing else. It is never told why.
+
+This framework default reaches adapters that execute `spec.phase_prompts`. Aki currently
+keeps its registered no-goal prompts inside its own frozen supervisor and is the documented
+legacy exception; goal injection and the default epistemic protocol are not yet wired for
+that adapter.
 
 ### 2. Freeze the active harness — framework
 
@@ -294,6 +308,7 @@ evolved memory. Raw conversation and process state never survive.
 
 | part | where |
 |---|---|
+| versioned goal/no-goal defaults and epistemic protocol | `episode_protocol.py` |
 | phase-prompt assembly rules (where goal / feedback / disposition inject) | `episode._phase_prompts` |
 | phase allocation, hard ceiling, live budget prompt | `budget.py` |
 | framework continuity protocol, redaction, phase history, fallback | `continuity.py` |

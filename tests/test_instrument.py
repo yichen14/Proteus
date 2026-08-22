@@ -520,6 +520,7 @@ def test_second_sweep_into_the_same_root_refuses(tmp_path):
 def test_sweep_manifest_records_the_model(tmp_path):
     import json
     from proteus import __version__
+    from proteus.core import DEFAULT_EPISODE_PROTOCOL_VERSION
     from proteus.sweep import run_sweep
 
     root = tmp_path / "out"
@@ -527,6 +528,8 @@ def test_sweep_manifest_records_the_model(tmp_path):
     manifest = json.loads((root / "manifest.json").read_text())
     assert manifest["model"] == "mock"
     assert manifest["condition"]["proteus_version"] == __version__
+    assert manifest["condition"]["default_episode_protocol_version"] == \
+        DEFAULT_EPISODE_PROTOCOL_VERSION
     assert "budget" not in manifest
     assert "budget_protocol" not in manifest["condition"]
 

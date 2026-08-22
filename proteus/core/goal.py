@@ -110,11 +110,12 @@ class GoalConfig:
     completion after episode N ends and before episode N+1 starts; OBSERVE results reach
     the agent in its next observe phase, HIDDEN results reach only the run's records.
 
-    One warning belongs to the user, not the framework, because no code can check it: if
-    the goal text is *specific* — "optimize SWE-bench" — then that benchmark must actually
-    be attached as an evaluator and set OBSERVE. A specific goal with no visible measure
-    of it gives the agent an objective it can neither pursue nor verify, and what you get
-    is drift toward whatever the text connotes rather than optimization of anything.
+    Proteus does not require the user to provide a complete evaluator set: the default
+    episode protocol asks the harness to judge the evidence it has and develop additional
+    tests or evaluators when that would reduce uncertainty. Availability is a separate
+    constraint. If a goal names an external benchmark but the harness can access neither
+    its tasks nor its results, goal text alone cannot make that benchmark verifiable; give
+    the harness task access or attach visible evaluator feedback.
 
     Presets cover the paper's conditions:
       - `GoalConfig.no_goal()`            → N0: no goal, no evaluator, no feedback.

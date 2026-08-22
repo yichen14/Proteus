@@ -9,6 +9,7 @@ from proteus.core.disposition import NEUTRAL, Disposition, record, review
 from proteus.core.continuity import HandoffStore, PROTOCOL_VERSION
 from proteus.core.budget import BUDGET_PROTOCOL_VERSION, BudgetPlan, budget_plan
 from proteus.core.episode import RunConfig, RunResult, run
+from proteus.core.episode_protocol import DEFAULT_EPISODE_PROTOCOL_VERSION
 from proteus.core.goal import (
     EvalResult,
     Evaluator,
@@ -25,6 +26,7 @@ __all__ = [
     "BUDGET_PROTOCOL_VERSION",
     "BudgetPlan",
     "Disposition",
+    "DEFAULT_EPISODE_PROTOCOL_VERSION",
     "EpisodeResult",
     "EpisodeSpec",
     "EvalResult",

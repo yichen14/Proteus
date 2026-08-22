@@ -1,10 +1,11 @@
 """A real-LLM harness on the minimal surface set — any OpenAI-compatible endpoint.
 
 The `minimal` harness with the mock policy replaced by a live model: each phase, the model
-is shown its phase prompt (disposition and goal already folded in by the framework) plus the
-current state of its own harness (the files on its surfaces), and returns the actions to
-take as JSON. Only files cross the episode boundary, so this is genuine self-evolution: what
-the model wrote in episode t is the state it wakes up to in episode t+1.
+is shown its phase prompt (default episode protocol, goal, and visible evaluator feedback
+already folded in by the framework) plus the current state of its own harness (the files on
+its surfaces), and returns the actions to take as JSON. Only files cross the episode
+boundary, so this is genuine self-evolution: what the model wrote in episode t is the state
+it wakes up to in episode t+1.
 
 Works against any OpenAI-compatible chat endpoint via stdlib HTTP (no SDK dependency).
 Defaults target DeepSeek:
@@ -29,8 +30,8 @@ from proteus.core.adapter import EpisodeResult, EpisodeSpec
 from proteus.core.budget import PHASES, budget_plan, phase_prompt
 
 SYSTEM = """\
-You are an agent that maintains and improves its own harness — the set of files it wakes
-up with each episode. You have two surfaces:
+You are an agent that can inspect and change its own harness — the set of files it wakes up
+with each episode. You have two surfaces:
 - notes/   markdown files (observations, plans, knowledge you want to keep)
 - tools/   small python files (utilities you may want later)
 
